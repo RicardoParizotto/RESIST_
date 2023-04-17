@@ -1,3 +1,6 @@
+These are the agents created for SERENE. In RESIST we are using these agents for training simple models in a synchronous manner. 
+
+
 # SERENE
 
 ## Executando o sistema
