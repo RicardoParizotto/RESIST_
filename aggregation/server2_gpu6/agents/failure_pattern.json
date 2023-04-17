@@ -1,0 +1,8 @@
+{
+    "workers": [0],
+    "args": {
+        "pattern": "failure",
+        "probability": 0.01,
+        "failure-duration": 240
+    }
+}

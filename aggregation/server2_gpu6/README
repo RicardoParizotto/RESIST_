@@ -1,0 +1,1 @@
+sudo python3 client/worker.py 1 --model simple --world_size 2 --out-dir example1 --veth=enp101s0f1 --veth2=enp101s0f0

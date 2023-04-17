@@ -1,0 +1,17 @@
+{
+    "model": "simple",
+    "workers": 8,
+    "stale": 0,
+    "cols": 32,
+    "rows": "auto",
+    "just_read": false,
+    "straggling_pattern": {
+        "workers": "all",
+        "args": {
+            "pattern": "slow_worker",
+            "probability": 0.15,
+            "min-slowdown": 0.5,
+            "max-slowdown": 2.0
+        }
+    }
+}
