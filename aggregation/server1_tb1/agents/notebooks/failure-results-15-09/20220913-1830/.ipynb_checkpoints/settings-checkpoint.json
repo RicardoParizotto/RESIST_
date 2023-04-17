@@ -1,0 +1,18 @@
+{
+    "model": "simple",
+    "workers": 4,
+    "stale": 10,
+    "cols": 32,
+    "rows": "auto",
+    "just_read": false,
+    "straggling_pattern": {
+        "workers": [
+            0
+        ],
+        "args": {
+            "pattern": "failure",
+            "probability": 0.01,
+            "failure-duration": 240
+        }
+    }
+}

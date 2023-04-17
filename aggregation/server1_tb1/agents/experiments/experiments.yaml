@@ -1,0 +1,9 @@
+experiments:
+  # small_nn-stale0:
+  #   model: simple
+  #   workers: 8
+  #   stale: 0
+  cnn-stale0:
+    model: cnn
+    workers: 4
+    stale: 0

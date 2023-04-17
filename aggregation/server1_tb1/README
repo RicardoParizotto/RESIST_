@@ -1,0 +1,3 @@
+Running the aggregation on first server:
+
+#sudo python3 client/worker.py 0 --model simple --world_size 2 --out-dir example1 --veth=enp1s0np1

@@ -1,0 +1,8 @@
+{
+    "model": "simple",
+    "workers": 4,
+    "stale": 10,
+    "cols": 32,
+    "rows": "auto",
+    "just_read": false
+}
