@@ -70,6 +70,8 @@ class gvtControl:
 
         self.GVT = min(self.logical_clocks)
 
+        print("got it")
+
         pkt =  Ether(src=get_if_hwaddr(self.iface), dst='ff:ff:ff:ff:ff:ff', type = ETHERTYPE_GVT)
         pkt = pkt / GvtProtocol(type=TYPE_DELIVER, value=self.GVT, pid=pkt[GvtProtocol].pid, round=0)
 
