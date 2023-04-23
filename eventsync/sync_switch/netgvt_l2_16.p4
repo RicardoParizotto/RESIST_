@@ -334,7 +334,7 @@ control SwitchIngress(
 
                         //hdr.gvt.type = TYPE_DELIVER;
                         //eth_forward.apply(); //forward to the replica
-                        ig_intr_tm_md.ucast_egress_port = 189;
+                        ipv4_forward(188, 0xb8599fdf07d1);
                         //ends virtual time synchronization
                     }
                 }
