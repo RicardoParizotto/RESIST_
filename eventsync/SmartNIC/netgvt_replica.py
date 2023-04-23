@@ -82,7 +82,7 @@ class gvtControl:
     #this is for receiving new GVT values
     def receive(self):
     	sys.stdout.flush()
-    	build_lfilter = lambda (r): GvtProtocol in r and r[GvtProtocol].type == TYPE_PROPOSAL
+    	build_lfilter = lambda r: GvtProtocol in r and r[GvtProtocol].type == TYPE_PROPOSAL
     	sniff(iface = self.iface, lfilter = build_lfilter, prn = lambda x: self.handle_pkt(x))
 
 
