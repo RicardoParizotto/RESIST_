@@ -333,8 +333,8 @@ control SwitchIngress(
                         //this is just for droping replayed packets in the replica in case of asynchronous replication
 
                         //hdr.gvt.type = TYPE_DELIVER;
-                        eth_forward.apply(); //forward to the replica
-
+                        //eth_forward.apply(); //forward to the replica
+                        ig_intr_tm_md.ucast_egress_port = 189;
                         //ends virtual time synchronization
                     }
                 }
