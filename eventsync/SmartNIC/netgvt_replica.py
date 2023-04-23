@@ -72,10 +72,10 @@ class gvtControl:
 
         print("got it")
 
-        pkt =  Ether(src=get_if_hwaddr(self.iface), dst='ff:ff:ff:ff:ff:ff', type = ETHERTYPE_GVT)
-        pkt = pkt / GvtProtocol(type=TYPE_DELIVER, value=self.GVT, pid=pkt[GvtProtocol].pid, round=0)
+        pkt2 =  Ether(src=get_if_hwaddr(self.iface), dst='ff:ff:ff:ff:ff:ff', type = ETHERTYPE_GVT)
+        pkt2 = pkt2 / GvtProtocol(type=TYPE_DELIVER, value=self.GVT, pid=pkt[GvtProtocol].pid, round=0)
 
-        sendp(pkt, iface=self.iface, verbose=False)
+        sendp(pkt2, iface=self.iface, verbose=False)
 
         sys.stdout.flush()
 
