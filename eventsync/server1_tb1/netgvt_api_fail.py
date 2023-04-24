@@ -124,7 +124,7 @@ class gvtControl:
 
     def handle_pong_pkt(self,pkt):
         sys.stdout.flush()
-        print('pong')
+        #print('pong')
         self.leader_alive = 1
         sys.stdout.flush()
 
@@ -185,7 +185,7 @@ class gvtControl:
     	        #print "sending on interface %s to %s" % (iface, str(src_addr))
     	        pkt =  Ether(src=get_if_hwaddr(self.iface), dst='ff:ff:ff:ff:ff:ff', type = ETHERTYPE_GVT)
     	        pkt = pkt / GvtProtocol(type=TYPE_PROPOSAL, value=lvt, pid=self.pid, round=0)
-    	        pkt.show2()
+    	        #pkt.show2()
                 self.start_ppkt = time.time()   
                 sendp(pkt, iface=self.iface, verbose=False)
 
@@ -227,7 +227,7 @@ class gvtControl:
         pkt =  Ether(src=get_if_hwaddr(self.iface), dst=get_if_hwaddr(self.iface))
         pkt = pkt /IP(src="10.50.1.1", dst="10.50.1.6") 
         pkt = pkt / UDP(dport=1234) / Raw(load=self.output_list)
-        pkt.show()
+        #pkt.show()
         send(pkt, iface=self.iface, verbose=False)
     #resist
     def strong_replay(self):
@@ -241,7 +241,7 @@ class gvtControl:
         pkt =  Ether(src=get_if_hwaddr(self.iface), dst=get_if_hwaddr(self.iface), type = ETHERTYPE_GVT)
         pkt = pkt / GvtProtocol(type=TYPE_COLLECT, value=0, pid=self.pid, round=0)
         sendp(pkt, iface=self.iface, verbose=False)
-        pkt.show2()
+        #pkt.show2()
 
         #send determinants
         self.send_determinants()
@@ -306,7 +306,7 @@ class gvtControl:
                 pkt = pkt / GvtProtocol(type=TYPE_FAILURE, value=0, pid=self.pid, round=0)
                 sendp(pkt, iface=self.iface, verbose=False)           #this is a PING! leader alive?
                 self.leader_alive = 0
-                print "ping"
+                #print "ping"
             elif(failure_counter >5):
                 #trigger recovery...
                 self.change_interface()
