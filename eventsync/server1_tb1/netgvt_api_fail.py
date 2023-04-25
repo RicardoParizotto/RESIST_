@@ -91,7 +91,7 @@ class gvtControl:
         interval = 5
         #TODO: change interval according to switch clocks/rounds
         time.sleep(interval)
-        self.in_list.clear()
+        del self.in_list[:]
 
 
     #Netgvt
