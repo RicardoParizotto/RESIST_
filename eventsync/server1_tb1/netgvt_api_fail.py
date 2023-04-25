@@ -84,6 +84,9 @@ class gvtControl:
         self.new_send_lost = Thread(target = self.resend_lost_packets)
         self.new_send_lost.start()
 
+        self.gb = Thread(target = self.garbage_collection)
+        self.gb.start()
+
     def garbage_collection(self):
         interval = 5
         #TODO: change interval according to switch clocks/rounds
