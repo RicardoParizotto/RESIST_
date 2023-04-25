@@ -18,7 +18,7 @@ from scapy.all import sniff
 
 import numpy as np
 
-import argparse,sys,time,os
+import argparse,sys,time,os, psutil
 
 
 ETHERTYPE_GVT = 0x8666
@@ -102,7 +102,11 @@ class gvtControl:
         sys.stdout.flush()
 
         end = time.time()
-        print end - self.start_ppkt
+
+        process = psutil.Process()
+        print process.memory_info().rss
+        #time of request update  
+        #print end - self.start_ppkt
         if(end - self.second_start > 1):
             self.second_start = end
             #print RPS
