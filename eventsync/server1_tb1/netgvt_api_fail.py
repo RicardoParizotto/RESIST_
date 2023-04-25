@@ -52,7 +52,7 @@ class gvtControl:
         self.svr_determinants = []        
 
         self.process = psutil.Process()
-        self.initial_mem = process.memory_info().rss
+        self.initial_mem = self.process.memory_info().rss
 
 
 
