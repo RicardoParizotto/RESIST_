@@ -51,6 +51,11 @@ class gvtControl:
         self.lvt_failure = 0
         self.svr_determinants = []        
 
+        self.process = psutil.Process()
+        self.initial_mem = process.memory_info().rss
+
+
+
         #those two are for strong consistency
         self.input_list = []
         self.output_list = []
@@ -109,8 +114,7 @@ class gvtControl:
 
         end = time.time()
 
-        process = psutil.Process()
-        print process.memory_info().rss
+        print self.process.memory_info().rss - self.initial_mem
         #time of request update  
         #print end - self.start_ppkt
         if(end - self.second_start > 1):
