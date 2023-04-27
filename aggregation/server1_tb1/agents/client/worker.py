@@ -130,8 +130,8 @@ class Worker:
             iter_end = time.time()
 
             #=======loging================#
-            #self.input_list.append(current_model)
-            print("#MEM: "+ self.process.memory_info().rss - self.initial_mem)
+            self.input_list.append(current_model)
+            print("#MEM: "+ str(self.process.memory_info().rss - self.initial_mem))
             #=======end log===============#
 
             self.iter_times.append(iter_end - iter_start)
