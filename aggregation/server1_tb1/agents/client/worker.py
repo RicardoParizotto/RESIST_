@@ -7,6 +7,9 @@ import random
 import sys
 import time
 
+
+import psutil
+
 import pandas as pd
 import torch
 
@@ -67,6 +70,24 @@ class Worker:
         self.train_accs = []
         self.time_refs = []
 
+        #just for assessment
+        #-------------------#-----------------------------
+        self.process = psutil.Process()
+        self.initial_mem = self.process.memory_info().rss
+
+        self.input_list = []
+
+        self.gb = Thread(target = self.garbage_collection)
+        self.gb.start()
+        #----------------#--------------#----------------
+
+    def garbage_collection(self):
+        interval = 5
+        #TODO: change interval according to switch clocks/rounds
+        time.sleep(interval)
+        del self.input_list[:]
+
+
     def run(self):
         print(f"Will straggle using: {self.straggler_generator}")
         initial_time = time.time()
@@ -107,6 +128,11 @@ class Worker:
             iter_start = time.time()
             current_model, acc = self.run_training_step(step, current_model, iter_train)
             iter_end = time.time()
+
+            #=======loging================#
+            self.input_list.append(current_model)
+            print("#MEM: "+ self.process.memory_info().rss - self.initial_mem)
+            #=======end log===============#
 
             self.iter_times.append(iter_end - iter_start)
             print("#it: " + str(iter_end - iter_start)) 
