@@ -72,8 +72,8 @@ class Worker:
 
         #just for assessment
         #-------------------#-----------------------------
-        self.process = psutil.Process()
-        self.initial_mem = self.process.memory_info().rss
+        #self.process = psutil.Process()
+        #self.initial_mem = self.process.memory_info().rss
 
         self.input_list = []
 
@@ -82,7 +82,7 @@ class Worker:
         #----------------#--------------#----------------
 
     def garbage_collection(self):
-        interval = 5
+        interval = 10
         #TODO: change interval according to switch clocks/rounds
         time.sleep(interval)
         del self.input_list[:]
@@ -130,8 +130,9 @@ class Worker:
             iter_end = time.time()
 
             #=======loging================#
-            self.input_list.append(current_model)
-            print("#MEM: "+ str(self.process.memory_info().rss - self.initial_mem))
+            #self.input_list.append(current_model)
+            #print("#MEM: "+ str(self.process.memory_info().rss - self.initial_mem))
+            print("MEM: " + getsizeof(self.input_list))
             #=======end log===============#
 
             self.iter_times.append(iter_end - iter_start)
