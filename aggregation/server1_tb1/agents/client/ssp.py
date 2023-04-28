@@ -19,8 +19,10 @@ def read_rows(n, worker_id, worker_clock, veth):
     pkts = [assemble_pkt(worker_id, worker_clock, x, "read_row") for x in range(n)]
     responses = []
 
+    build_lfilter = lambda r: SspHeader in r and r[SspHeader].action == "read_row"
+
     for chunk in chunkify(pkts):
-        res, nres = srp(chunk, timeout=3, iface = veth, retry=-1000, filter="udp")
+        res, nres = srp(chunk, timeout=3, iface = veth, retry=-1000, lfilter=build_lfilter)
         answers = [answer.answer for answer in res]
         if len(answers) != len(chunk):
             print("poblem")
@@ -48,9 +50,10 @@ def inc_rows(n, values, worker_id, worker_clock, veth):
 def clock(worker_id, worker_clock, veth):
     """Inform the switch that the worker has completed one clock.
     Only return when the worker can proceed training"""
-    
+    build_lfilter = lambda r: SspHeader in r and r[SspHeader].action == "clock"
+
     pkt = assemble_pkt(worker_id, worker_clock, 0, "clock")
-    response = srp1(pkt, iface=veth, verbose=True)
+    response = srp1(pkt, iface=veth, verbose=True, lfilter=build_lfilter)
 
     #sendp(pkt, iface=veth, verbose=False)
     #print("receive packet")
