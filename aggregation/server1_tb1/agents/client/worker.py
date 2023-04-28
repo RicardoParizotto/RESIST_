@@ -132,7 +132,7 @@ class Worker:
             #=======loging================#
             #self.input_list.append(current_model)
             #print("#MEM: "+ str(self.process.memory_info().rss - self.initial_mem))
-            print("MEM: " + str(getsizeof(self.input_list)))
+            print("MEM: " + str(sys.getsizeof(self.input_list)))
             #=======end log===============#
 
             self.iter_times.append(iter_end - iter_start)
