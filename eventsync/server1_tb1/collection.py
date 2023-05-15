@@ -40,12 +40,15 @@ BASE_PKT = (
 class determinantsCollection:
     def __init__(self, veth1):  
         self.iface_ = veth1
+        self.max_value = 0;
+        self.content = []  
         self.new_rec_gather = Thread(target=self.receive_report)
-        self.new_rec_gather.start()         
+        self.new_rec_gather.start()
     def handle_report(self, pkt):
         sys.stdout.flush()
-        #content = (pkt[Raw].load).decode("utf-8")
-        print(max(int(value) for (id, round, value) in ast.literal_eval(content)))  
+        content = (pkt[Raw].load).decode("utf-8")
+        self.content = ast.literal_eval(content)
+        self.max_value = max(int(value) for (id, round, value) in self.content)
         sys.stdout.flush()   
     def receive_report(self):
         #if receives something out of order, replay again
@@ -57,6 +60,10 @@ class determinantsCollection:
         pkt = BASE_PKT / Raw(load=str(list))
         pkt.show2()
         sendp(pkt, iface=self.iface_, verbose=False)
+    def get_max():
+        return self.max_value
+    def get_content():
+        return self.content
 
-det = determinantsCollection(iface_)    
-det.send_determinants([(1, 2, 3), (1, 5, 1)])
+#det = determinantsCollection(iface_)    
+#det.send_determinants([(1, 2, 3), (1, 5, 1)])

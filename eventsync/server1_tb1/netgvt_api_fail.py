@@ -20,6 +20,9 @@ import numpy as np
 
 import argparse,sys,time,os, psutil
 
+from collection import determinantsCollection
+from replay import strongReplay
+
 
 ETHERTYPE_GVT = 0x8666
 TYPE_PROPOSAL = 1
@@ -53,8 +56,6 @@ class gvtControl:
 
         self.process = psutil.Process()
         self.initial_mem = self.process.memory_info().rss
-
-
 
         #those two are for strong consistency
         self.input_list = []
@@ -154,20 +155,11 @@ class gvtControl:
         self.lvt_failure = pkt[GvtProtocol].value
         sys.stdout.flush()   
 
-    def handle_unorder_pkt(self, pkt):
-        sys.stdout.flush()
-
-        pkt2 =  Ether(src=get_if_hwaddr(self.iface), dst='ff:ff:ff:ff:ff:ff', type = ETHERTYPE_GVT)
-        pkt2 = pkt2 / GvtProtocol(type=TYPE_REPLAY, value=pkt[GvtProtocol].value, pid=self.pid, round =pkt[GvtProtocol].round)
-        sendp(pk2t, iface=self.iface, verbose=False)
-        
-        sys.stdout.flush()
-
     #this is for receiving new GVT values
     def receive(self):
-    	sys.stdout.flush()
-    	build_lfilter = lambda (r): GvtProtocol in r and r[GvtProtocol].type == TYPE_DELIVER
-    	sniff(iface = self.iface, lfilter = build_lfilter, prn = lambda x: self.handle_pkt(x))
+        sys.stdout.flush()
+        build_lfilter = lambda (r): GvtProtocol in r and r[GvtProtocol].type == TYPE_DELIVER
+        sniff(iface = self.iface, lfilter = build_lfilter, prn = lambda x: self.handle_pkt(x))
 
     def receive_pong(self):
         sys.stdout.flush()
@@ -180,13 +172,6 @@ class gvtControl:
         build_lfilter = lambda (r): GvtProtocol in r and r[GvtProtocol].type == TYPE_COLLECT
         sniff(iface = self.iface, lfilter = build_lfilter,prn = lambda x: self.handle_gather_pkt(x))
 
-    def receive_unordered(self):
-        #if receives something out of order, replay again
-        sys.stdout.flush()
-        build_lfilter = lambda (r): GvtProtocol in r and r[GvtProtocol].type == TYPE_UNORDERED
-        sniff(iface = self.iface, lfilter = build_lfilter,prn = lambda x: self.handle_unorder_pkt(x))
-
-
     def send(self):
         src_addr = socket.gethostbyname('10.50.1.1')
         dst_addr = socket.gethostbyname('10.50.0.100')
@@ -197,13 +182,13 @@ class gvtControl:
         self.second_start
         while lvt < end_simulation_loop:
             if lvt <= self.gvt:
-	        lvt = lvt + 1
+                lvt = lvt + 1
                 self.in_list.append((lvt, time.time()))
                 self.input_list.append(lvt)
-    	        #print "sending on interface %s to %s" % (iface, str(src_addr))
-    	        pkt =  Ether(src=get_if_hwaddr(self.iface), dst='ff:ff:ff:ff:ff:ff', type = ETHERTYPE_GVT)
-    	        pkt = pkt / GvtProtocol(type=TYPE_PROPOSAL, value=lvt, pid=self.pid, round=0)
-    	        #pkt.show2()
+                #print "sending on interface %s to %s" % (iface, str(src_addr))
+                pkt =  Ether(src=get_if_hwaddr(self.iface), dst='ff:ff:ff:ff:ff:ff', type = ETHERTYPE_GVT)
+                pkt = pkt / GvtProtocol(type=TYPE_PROPOSAL, value=lvt, pid=self.pid, round=0)
+                #pkt.show2()
                 self.start_ppkt = time.time()   
                 sendp(pkt, iface=self.iface, verbose=False)
 
@@ -249,7 +234,7 @@ class gvtControl:
         send(pkt, iface=self.iface, verbose=False)
     #resist
     def strong_replay(self):
-        #create gathering packet and start replay*/
+        #start replay*/
       
         #this one is for receving collection from switches (round and lvt for the process)
         self.new_rec_gather = Thread(target=self.receive_gathering)
@@ -259,20 +244,18 @@ class gvtControl:
         pkt =  Ether(src=get_if_hwaddr(self.iface), dst=get_if_hwaddr(self.iface), type = ETHERTYPE_GVT)
         pkt = pkt / GvtProtocol(type=TYPE_COLLECT, value=0, pid=self.pid, round=0)
         sendp(pkt, iface=self.iface, verbose=False)
-        #pkt.show2()
+        #the thread new_rec_gather will receive this packet
 
-        #send determinants
-        self.send_determinants()
-        #gather from server
-        self.new_rec_server = Thread(target=self.receive_server)
-        self.new_rec_server.start()
+        #gather from server occurs from the det instance of determinants collection
+        #send determinants using the determinantsCollection class
+        det = determinantsCollection(self.iface)
+        det.send_determinants(self.output_list)
+
         #create thread to receive ann replay out of order packets
-        self.new_rec_unordered = Thread(target=self.receive_unordered)
-        self.new_rec_unordered.start() 
-
+        rep = strongReplay(self.iface)
         #now need to replay packets
-        self.replay = Thread(target=self.replay_packets)
-        self.replay.start()
+        rep.start_replay(det.get_max(), self.round_failure, self.input_list, det.get_content())
+
 
     #this is resist stuff
     def replay_packets(self):
@@ -294,13 +277,11 @@ class gvtControl:
             print('no pkt in outputlist') 
         #TODO: stop condition??? special packet?
                 
-
     #this is also resist stuff
     def change_interface(self):
         begin = time.time()
         print(('PRIMARY TIMEOUT!!'))
         self.iface = self.iface2  #this is for using the other interface. Have to change for different testbed
-
         #----------------------retransmit---------------------# 
         self.new_rec_thread = Thread(target=self.receive)
         self.new_rec_thread.start()

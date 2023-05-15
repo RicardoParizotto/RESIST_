@@ -19,7 +19,6 @@ import numpy as np
 
 import argparse,sys,time,os
 
-
 ETHERTYPE_GVT = 0x8666
 TYPE_PROPOSAL = 10
 TYPE_DELIVER = 0
@@ -32,17 +31,18 @@ TYPE_COLLECT = 6
 
 initial = time.time()
 
-ordered_list = []
-
 iface_ = "enp1s0np1"
 #iface_ = "enp101s0f1"
 
 pkt_base =  Ether(src=get_if_hwaddr(iface_), dst='ff:ff:ff:ff:ff:ff', type = ETHERTYPE_GVT)
 pkt_base = pkt_base / GvtProtocol(type=TYPE_REPLAY, value=0, pid=0, round=1)
 
+#this class packets sends packets with values from the ordered list
+#to start the replay is necessary to replay the first packet
 class strongReplay:
     def __init__(self, ith1):
         self.iface_ = ith1        
+        self.ordered_list[]
         self.new_rec_gather = Thread(target=self.receive_unordered)
         self.new_rec_gather.start()
         self.new_rec_last = Thread(target=self.receive_lastone)
@@ -53,7 +53,7 @@ class strongReplay:
         sys.stdout.flush()
         print("got something")
         pkt2 =  Ether(src=get_if_hwaddr(self.iface_), dst='ff:ff:ff:ff:ff:ff', type = ETHERTYPE_GVT)
-        pkt2 = pkt2 / GvtProtocol(type=TYPE_REPLAY, value=pkt[GvtProtocol].value, pid=0, round =pkt[GvtProtocol].round)
+        pkt2 = pkt2 / GvtProtocol(type=TYPE_REPLAY, value=pkt[GvtProtocol].value, value=pkt[GvtProtocol].pid, round =pkt[GvtProtocol].round)
         sendp(pkt2, iface=self.iface_, verbose=False)
         sys.stdout.flush()
     def receive_unordered(self):
@@ -68,8 +68,11 @@ class strongReplay:
         print(time.time() - initial)
     def handle_ack_pkt(self, pkt):
         sys.stdout.flush()
-        i = ordered_list.pop(0)
-        pkt_base[GvtProtocol].round = i
+        i = self.ordered_list.pop(0)
+        for (id, round, value) in i:
+            pkt_base[GvtProtocol].round = round
+            pkt_base[GvtProtocol].value = value
+            pkt_base[GvtProtocol].pid = id
         sendp(pkt_base, iface=self.iface_, verbose=False)        
         sys.stdout.flush()   
     def receive_lastone(self):
@@ -80,28 +83,22 @@ class strongReplay:
     def receive_ack(self):
         sys.stdout.flush()
         build_lfilter = lambda r: GvtProtocol in r and r[GvtProtocol].type == 15
-        sniff(iface = self.iface_, lfilter = build_lfilter,prn = lambda x: self.handle_ack_pkt(x))    
+        sniff(iface = self.iface_, lfilter = build_lfilter,prn = lambda x: self.handle_ack_pkt(x))  
+    def start_replay(max_, round_, pktlist, determinants):
+        self.ordered_list = determinants
+        i = self.ordered_list.pop(0)
+        for (id, round, value) in i:
+            pkt_base[GvtProtocol].round = round
+            pkt_base[GvtProtocol].value = value
+            pkt_base[GvtProtocol].pid = id
+        sendp(pkt_base, iface=iface_, verbose=False)   
 
 
-teste = strongReplay(iface_)
-for i in range(2,102):
-    ordered_list.append(i) 
+#teste = strongReplay(iface_)
+#for i in range(2,102):
+#    ordered_list.append(i) 
 
-initial = time.time()
-pkt_base[GvtProtocol].round = 1
-sendp(pkt_base, iface=iface_, verbose=False)        
+#initial = time.time()
+#pkt_base[GvtProtocol].round = 1
+#sendp(pkt_base, iface=iface_, verbose=False)        
 
-
-#for i in range(1,11):
-#    #if i%2 == 0:
-#        ordered_list.append(i) 
-
-
-#
-#for i in range(3,11):
-#    if i%2 != 0:
-#        ordered_list.append(i)
-
-#pkt =  Ether(src=get_if_hwaddr(iface_), dst='ff:ff:ff:ff:ff:ff', type = ETHERTYPE_GVT)
-#pkt = pkt / GvtProtocol(type=TYPE_REPLAY, value=0, pid=0, round=2)
-#sendp(pkt, iface=iface_, verbose=False)  
