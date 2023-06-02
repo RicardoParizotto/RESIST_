@@ -84,8 +84,10 @@ class Worker:
     def garbage_collection(self):
         interval = 10
         #TODO: change interval according to switch clocks/rounds
-        time.sleep(interval)
-        del self.input_list[:]
+        while(True):
+            time.sleep(interval)
+            self.input_list = []
+        #del self.input_list[:]
 
 
     def run(self):
@@ -130,7 +132,7 @@ class Worker:
             iter_end = time.time()
 
             #=======loging================#
-            #self.input_list.append(current_model)
+            self.input_list.append(current_model)
             #print("#MEM: "+ str(self.process.memory_info().rss - self.initial_mem))
             print("MEM: " + str(sys.getsizeof(self.input_list)))
             #=======end log===============#
