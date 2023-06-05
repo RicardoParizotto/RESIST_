@@ -158,18 +158,18 @@ class gvtControl:
     #this is for receiving new GVT values
     def receive(self):
         sys.stdout.flush()
-        build_lfilter = lambda (r): GvtProtocol in r and r[GvtProtocol].type == TYPE_DELIVER
+        build_lfilter = lambda r: GvtProtocol in r and r[GvtProtocol].type == TYPE_DELIVER
         sniff(iface = self.iface, lfilter = build_lfilter, prn = lambda x: self.handle_pkt(x))
 
     def receive_pong(self):
         sys.stdout.flush()
-        build_lfilter = lambda (r): GvtProtocol in r and r[GvtProtocol].type == TYPE_DELFAILURE
+        build_lfilter = lambda r: GvtProtocol in r and r[GvtProtocol].type == TYPE_DELFAILURE
         sniff(iface = self.iface, lfilter = build_lfilter,prn = lambda x: self.handle_pong_pkt(x))
     
     #this is for receiving rounds from switch after failure
     def receive_gathering(self):
         sys.stdout.flush()
-        build_lfilter = lambda (r): GvtProtocol in r and r[GvtProtocol].type == TYPE_COLLECT
+        build_lfilter = lambda r: GvtProtocol in r and r[GvtProtocol].type == TYPE_COLLECT
         sniff(iface = self.iface, lfilter = build_lfilter,prn = lambda x: self.handle_gather_pkt(x))
 
     def send(self):
