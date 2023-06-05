@@ -103,7 +103,8 @@ class strongReplay:
 
 teste = strongReplay(iface_)
 for i in range(2,102):
-    teste.ordered_list.append([i, 10, 0]) 
+    if i % 2 == 0:
+        teste.ordered_list.append([i, 10, 0]) 
 
 initial = time.time()
 pkt_base[GvtProtocol].round = 1
