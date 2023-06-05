@@ -130,7 +130,7 @@ class Worker:
             iter_end = time.time()
 
             #=======loging================#
-            #self.input_list.append(current_model)
+            self.input_list.append(current_model)
             #print("#MEM: "+ str(self.process.memory_info().rss - self.initial_mem))
             print("MEM: " + str(sys.getsizeof(self.input_list)))
             #=======end log===============#
