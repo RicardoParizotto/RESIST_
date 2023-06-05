@@ -118,7 +118,7 @@ class gvtControl:
 
         end = time.time()
 
-        print self.process.memory_info().rss - self.initial_mem
+        print (self.process.memory_info().rss - self.initial_mem)
         #time of request update  
         #print end - self.start_ppkt
         if(end - self.second_start > 1):
